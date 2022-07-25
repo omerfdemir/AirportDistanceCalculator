@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentDbModel.AirportDocument;
 
 namespace Services
 {
@@ -13,5 +14,9 @@ namespace Services
         IUnitOfWork DbUnitOfWork { get; }
 
         IAirportService GetAirportService();
+        
+        IMongoDbContext MongoDb { get; }
+
+        
     }
 }

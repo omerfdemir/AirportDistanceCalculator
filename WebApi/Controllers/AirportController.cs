@@ -73,5 +73,23 @@ namespace WebApi.Controllers
 
             return Ok(airport);
         }
+        
+        [HttpGet("{airportName}")]
+        public async Task<IActionResult> GetAirportDetailsFromDocumentDb([MaxLength(IATALength)][MinLength(IATALength)] string airportName)
+        {
+            Airport airport = new Airport();
+            try
+            {
+                airport = await _airportService.GetAirportFromDocumentDb(airportName);
+
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+
+            return Ok(airport);
+        }
     }
 }

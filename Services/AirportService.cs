@@ -1,6 +1,8 @@
 ﻿using BusinessModel;
 using DbModel;
+using DocumentDbModel.AirportDocument;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using Utils;
 
 namespace Services
@@ -11,6 +13,7 @@ namespace Services
         private IServiceProviderSingleton _serviceProviderSingleton;
         private IUnitOfWork _dbUnitOfWork;
         private IAirportFinderService _airportFinderService;
+        private IMongoDbContext _mongoDbContext;
 
         public AirportService(IUnitOfWork unitOfWork, IServiceProvider serviceProvider, IServiceProviderSingleton serviceProviderSingleton)
         {
@@ -18,6 +21,7 @@ namespace Services
             _serviceProvider = serviceProvider;
             _serviceProviderSingleton = serviceProviderSingleton;
             _airportFinderService = _serviceProviderSingleton.GetAirportFinderService();
+            _mongoDbContext = _serviceProvider.MongoDb;
 
         }
 
@@ -105,6 +109,26 @@ namespace Services
 
             await _dbUnitOfWork.SaveChangesAsync();
 
+            return airport;
+        }
+        
+        public async Task<Airport> GetAirportFromDocumentDb(string iata)
+        {
+            IMongoDbCollectionRepository<AirportDocument> collection = _mongoDbContext.AirportCollection;
+            var airportCollection = await collection.FindAsync(r => r.IATACode == iata);
+            var airportDocument = airportCollection.FirstOrDefault();
+            
+            if (airportDocument != null)
+            {
+                return AirportDocument.ConvertDocumentToModel(airportDocument);
+            }
+
+            Airport airport = await _airportFinderService.FindAirport(iata.ToUpper());
+
+            AirportDocument newAirportDocument = AirportDocument.ConvertModelToDocument(airport);
+
+            await _mongoDbContext.AirportCollection.InsertOneAsync(newAirportDocument);
+            
             return airport;
         }
     }

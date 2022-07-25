@@ -15,5 +15,6 @@ namespace Services
         Task<double> CalculateDistanceBetweenTwoAirportsInKm(string airport1, string airport2);
 
         Task<Airport> GetAirport(string iata);
+        Task<Airport> GetAirportFromDocumentDb(string iata);
     }
 }

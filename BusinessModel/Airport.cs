@@ -14,7 +14,6 @@ namespace BusinessModel
 
         public Airport(AirportEntity airportEntity, GeoCodeEntity geoCodeEntity, AddressEntity addressEntity, AnalyticsEntity analyticsEntity, TravelersEntity travelersEntity)
         {
-            Id = airportEntity.Id;
             Type = airportEntity.Type;
             SubType = airportEntity.SubType;
             Name = airportEntity.Name;
@@ -27,9 +26,7 @@ namespace BusinessModel
             Analytics = new Analytics(analyticsEntity, travelersEntity);
 
         }
-
-        public int Id { get; set; }
-
+        
         [JsonProperty("type")]
         public string Type { get; set; }
 
@@ -79,5 +76,6 @@ namespace BusinessModel
 
             return airportEntity;
         }
+        
     }
 }

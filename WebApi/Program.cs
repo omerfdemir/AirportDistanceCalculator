@@ -1,4 +1,5 @@
 using DbModel;
+using DocumentDbModel.AirportDocument;
 using Microsoft.EntityFrameworkCore;
 using Services;
 
@@ -33,14 +34,35 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
-var connectionString = configuration.GetConnectionString("AppDb");
+string connectionString = configuration.GetConnectionString("AppDb");
+string documentDbConnectionString = configuration.GetSection("DocumentDb")["ConnectionString"];
+
+string documentDbDatabase = configuration.GetSection("DocumentDb")["Database"];
+string collectionName = configuration.GetSection("DocumentDb")["CollectionName"];
 
 builder.Services.AddDbContext<AirportDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
 
+//
+// Mongo DB settings
+//
+DocumentDbSettings mongoDbSettings = new DocumentDbSettings
+{
+    MongoDbConnectionString = documentDbConnectionString,
+    MongoDbDatabase = documentDbDatabase,
+    CollectionName = collectionName
+};
+builder.Services.Configure<DocumentDbSettings>(options =>
+{
+    options.MongoDbConnectionString = mongoDbSettings.MongoDbConnectionString;
+    options.MongoDbDatabase = mongoDbSettings.MongoDbDatabase;
+    options.CollectionName = mongoDbSettings.CollectionName;
+});
+builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddSingleton<Services.IServiceProviderSingleton, Services.ServiceProviderSingleton>();
 builder.Services.AddScoped<Services.IServiceProvider, Services.ServiceProvider>();
+
 builder.Services.BuildServiceProvider();
 
 
