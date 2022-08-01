@@ -12,5 +12,7 @@ namespace DbModel
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         IRepository<AirportEntity> AirportRepository { get; }
+        
+        IRepository<AirportEntityJObject> AirportJObjectRepository { get; }
     }
 }

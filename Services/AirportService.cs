@@ -3,6 +3,7 @@ using DbModel;
 using DocumentDbModel.AirportDocument;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Newtonsoft.Json.Linq;
 using Utils;
 
 namespace Services
@@ -100,7 +101,7 @@ namespace Services
             {
                 return new Airport(airportEntity, airportEntity.GeoCode, airportEntity.Address, airportEntity.Analytics, airportEntity.Analytics.Travelers);
             }
-            
+
             Airport airport = await _airportFinderService.FindAirport(iata.ToUpper());
 
             AirportEntity newAirportEntity = Airport.ConvertModelToEntity(airport);
@@ -111,13 +112,13 @@ namespace Services
 
             return airport;
         }
-        
+
         public async Task<Airport> GetAirportFromDocumentDb(string iata)
         {
             IMongoDbCollectionRepository<AirportDocument> collection = _mongoDbContext.AirportCollection;
             var airportCollection = await collection.FindAsync(r => r.IATACode == iata);
             var airportDocument = airportCollection.FirstOrDefault();
-            
+
             if (airportDocument != null)
             {
                 return AirportDocument.ConvertDocumentToModel(airportDocument);
@@ -128,7 +129,66 @@ namespace Services
             AirportDocument newAirportDocument = AirportDocument.ConvertModelToDocument(airport);
 
             await _mongoDbContext.AirportCollection.InsertOneAsync(newAirportDocument);
-            
+
+            return airport;
+        }
+
+        public async Task<Airport> GetAirportFromJObject(string iata)
+        {
+            var airportEntity = await _dbUnitOfWork.AirportJObjectRepository.FindOneAsync(r => r.IATACode == iata.ToUpper());
+
+            Airport airport = null;
+            if (airportEntity != null)
+            {
+                JObject airportJson = JObject.Parse(airportEntity.JSON);
+                JToken address = airportJson["Address"];
+                JToken analytics = airportJson["Analytics"];
+                JToken travelers = analytics["travelers"];
+                JToken geoCode = airportJson["GeoCode"];
+
+                airport = new Airport()
+                {
+                    Address = new Address()
+                    {
+                        CityCode = address["cityCode"].ToString(),
+                        CityName = address["cityName"].ToString(),
+                        CountryCode = address["countryCode"].ToString(),
+                        CountryName = address["countryName"].ToString(),
+                        RegionCode = address["regionCode"].ToString()
+                    },
+                    Analytics = new Analytics()
+                    {
+                        Travelers = new Travelers()
+                        {
+                            Score = Int32.Parse(travelers["score"].ToString()),
+                        }
+                    },
+                    Name = airportJson["Name"].ToString(),
+                    Type = airportJson["Type"].ToString(),
+                    AirportId = airportJson["AirportId"].ToString(),
+                    DetailedName = airportJson["DetailedName"].ToString(),
+                    GeoCode = new GeoCode()
+                    {
+                        Latitude = Double.Parse(geoCode["latitude"].ToString()),
+                        Longitude = Double.Parse(geoCode["longitude"].ToString()),
+                    },
+                    SubType = airportJson["SubType"].ToString(),
+                    TimeZoneOffset = airportJson["TimeZoneOffset"].ToString(),
+                    IATACode = airportJson["IATACode"].ToString(),
+                };
+
+                return airport;
+
+
+            }
+            airport = await _airportFinderService.FindAirport(iata.ToUpper());
+
+            AirportEntityJObject newAirportJObject = AirportJObject.ConvertModelToEntity(airport);
+
+            _dbUnitOfWork.AirportJObjectRepository.Insert(newAirportJObject);
+
+            await _dbUnitOfWork.SaveChangesAsync();
+
             return airport;
         }
     }

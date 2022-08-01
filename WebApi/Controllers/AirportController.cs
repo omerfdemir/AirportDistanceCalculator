@@ -91,5 +91,24 @@ namespace WebApi.Controllers
 
             return Ok(airport);
         }
+        
+        [HttpGet("{airportName}")]
+        public async Task<IActionResult> GetAirportDetailsFromJObject([MaxLength(IATALength)][MinLength(IATALength)] string airportName)
+        {
+            Airport airport = new Airport();
+            try
+            {
+                airport = await _airportService.GetAirportFromJObject(airportName);
+
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+
+            return Ok(airport);
+        }
+        
     }
 }

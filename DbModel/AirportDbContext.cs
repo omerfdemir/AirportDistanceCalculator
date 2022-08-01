@@ -11,6 +11,8 @@ namespace DbModel
         }
 
         public DbSet<AirportEntity> Airports { get; set; }
+        
+        public DbSet<AirportEntityJObject> AirportsJObject { get; set; }
 
     }
 }

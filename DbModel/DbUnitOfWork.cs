@@ -40,6 +40,21 @@ namespace DbModel
             }
         }
 
+        private IRepository<AirportEntityJObject> _airportJObjectRepository;
+        
+        public IRepository<AirportEntityJObject> AirportJObjectRepository
+        {
+            get
+            {
+                if(_airportJObjectRepository == null)
+                {
+                    _airportJObjectRepository = new Repository<AirportEntityJObject>(_dbContext);
+                }
+
+                return _airportJObjectRepository;
+            }
+        }
+
         public void Dispose()
         {
             Dispose();
