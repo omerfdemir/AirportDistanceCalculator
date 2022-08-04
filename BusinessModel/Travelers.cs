@@ -15,7 +15,6 @@ public class Travelers
         Score = travelersEntity.Score;
     }
     
-    [JsonPropertyName("score")]
     public int Score { get; set; }
 
     public static TravelersEntity ConvertModelToEntity(Travelers travelers)

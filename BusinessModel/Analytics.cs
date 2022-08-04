@@ -15,7 +15,6 @@ public class Analytics
         Travelers = new Travelers(travelersEntity);
     }
     
-    [JsonPropertyName("travelers")]
     public Travelers Travelers { get; set; }
 
     public static AnalyticsEntity ConvertModelToEntity(Analytics analytics)

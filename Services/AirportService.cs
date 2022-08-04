@@ -95,7 +95,10 @@ namespace Services
         public async Task<Airport> GetAirport(string iata)
         {
             var airportEntity = await _dbUnitOfWork.AirportRepository.FindOneAsync(airport => airport.IATACode == iata.ToUpper(),
-                r => r.Include(airport => airport.Address).Include(airport => airport.Analytics).ThenInclude(analytics => analytics.Travelers).Include(airport => airport.GeoCode));
+                r => r.Include(airport => airport.Address)
+                    .Include(airport => airport.Analytics)
+                    .ThenInclude(analytics => analytics.Travelers)
+                    .Include(airport => airport.GeoCode));
 
             if (airportEntity != null)
             {

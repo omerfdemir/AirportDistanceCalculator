@@ -30,31 +30,23 @@ namespace BusinessModel
         [JsonProperty("type")]
         public string Type { get; set; }
 
-        [JsonProperty("subType")]
         public string SubType { get; set; }
 
-        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("detailedName")]
         public string DetailedName { get; set; }
 
         [JsonProperty("id")]
         public string AirportId { get; set; }
 
-        [JsonProperty("timeZoneOffset")]
         public string TimeZoneOffset { get; set; }
 
-        [JsonProperty("iataCode")]
         public string IATACode { get; set; }
 
-        [JsonProperty("geoCode")]
         public GeoCode GeoCode { get; set; }
 
-        [JsonProperty("address")]
         public Address Address { get; set; }
 
-        [JsonProperty("analytics")]
         public Analytics Analytics { get; set; }
 
         public static AirportEntity ConvertModelToEntity(Airport airport)

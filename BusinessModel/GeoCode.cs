@@ -16,10 +16,8 @@ public class GeoCode
         Longitude = geoCodeEntity.Longitude;
     }
     
-    [JsonPropertyName("latitude")]
     public double Latitude { get; set; }
-
-    [JsonPropertyName("longitude")]
+    
     public double Longitude { get; set; }
 
     public static GeoCodeEntity ConvertModelToEntity(GeoCode geoCode)

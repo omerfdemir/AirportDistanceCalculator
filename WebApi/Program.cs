@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DbModel;
 using DocumentDbModel.AirportDocument;
 using Microsoft.EntityFrameworkCore;
@@ -22,12 +23,11 @@ builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
 var configuration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -59,13 +59,13 @@ builder.Services.Configure<DocumentDbSettings>(options =>
     options.MongoDbDatabase = mongoDbSettings.MongoDbDatabase;
     options.CollectionName = mongoDbSettings.CollectionName;
 });
+
+
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 builder.Services.AddSingleton<Services.IServiceProviderSingleton, Services.ServiceProviderSingleton>();
 builder.Services.AddScoped<Services.IServiceProvider, Services.ServiceProvider>();
 
 builder.Services.BuildServiceProvider();
-
-
 
 
 var app = builder.Build();

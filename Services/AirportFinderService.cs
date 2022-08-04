@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using BusinessModel;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -87,6 +88,7 @@ namespace Services
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var jsonContent = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
                 var data = JsonConvert.DeserializeObject<Root>(jsonContent);
 
                 if (data.Data.Count == 0)
